@@ -114,8 +114,30 @@ class DataLayer:
     def add_guest(self, guest):  # Method to add a guest to the data layer
         self.guests.append(guest)
 
-    def add_event(self, event):  # Method to add an event to the data layer
+    def add_event(self,event_id, type, theme, date, time, duration, venue_address, client_id, guest_list, catering_company, cleaning_company, decorations_company, entertainment_company, furniture_supply_company, invoice ):
+        # Add the event
+        event = {  # Create a dictionary to represent the event data
+            "event_id": event_id,
+            "type": type,
+            "theme": theme,
+            "date": date,
+            "time": time,
+            "duration": duration,
+            "venue_address": venue_address,
+            "client_id": client_id,
+            "guest_list": guest_list,
+            "catering_company": catering_company,
+            "cleaning_company": cleaning_company,
+            "decorations_company": decorations_company,
+            "entertainment_company": entertainment_company,
+            "furniture_supply_company": furniture_supply_company,
+            "invoice": invoice
+        }
+
+
+
         self.events.append(event)
+
 
     def read_all_data(self):  # Method to read all data from file
         try:
@@ -284,6 +306,9 @@ class EmployeeForm:
             # Clear all entry fields for the next submission.
             self.clear_boxes()
 
+            self.data_layer.display_all_data()
+
+
 
 # Define the EventForm class representing the GUI for adding events
 class EventForm:
@@ -429,18 +454,14 @@ class EventForm:
             return
 
         # Add the event.
-        self.data_layer.add_event(event_id, type, theme, date, time, duration, venue_address, client_id, guest_list, catering_company, cleaning_company, decorations_company, entertainment_company, furniture_supply_company, invoice)
         messagebox.showinfo("Success", "Event added successfully.")
         # Clear entry fields after submission.
         self.clear_boxes()
 
+        self.data_layer.display_all_data()
 
 
-# Define the SupplierForm class representing the GUI for adding suppliers
-# Import the necessary module for GUI
-import tkinter as tk
-from tkinter import messagebox
-import re
+
 
 # Define the SupplierForm class representing the GUI for adding suppliers
 class SupplierForm:
@@ -512,6 +533,8 @@ class SupplierForm:
         self.data_layer.add_supplier(supplier_id, name, address, contact_details)
         messagebox.showinfo("Success", "Supplier added successfully.")
         self.clear_boxes()
+
+        self.data_layer.display_all_data()
 
 # Define the VenueForm class representing the GUI for adding venues
 class VenueForm:
@@ -626,6 +649,8 @@ class VenueForm:
         messagebox.showinfo("Submission", "Venue details submitted successfully.")
         self.clear_boxes()
 
+        self.data_layer.display_all_data()
+
 
 
 # Define the ClientForm class representing the GUI for adding clients
@@ -723,6 +748,9 @@ class ClientForm:
         messagebox.showinfo("Submission", "Client details submitted successfully.")
         self.clear_boxes()
 
+        self.data_layer.display_all_data()
+
+
 
 # Define the GuestForm class representing the GUI for adding guests
 class GuestForm:
@@ -803,6 +831,9 @@ class GuestForm:
         self.data_layer.write_data_to_file({"guests": all_guests})
         messagebox.showinfo("Submission", "Guest details submitted successfully.")
         self.clear_boxes()
+
+        self.data_layer.display_all_data()
+
 
 # Define the App class representing the main application
 class App:
