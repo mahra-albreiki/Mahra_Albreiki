@@ -374,7 +374,7 @@ class EventForm:
             return
 
         # Validate event ID format.
-        if not re.match(r'E\d{4}', event_id):
+        if not (r'E\d{4}', event_id):
             messagebox.showerror("Error", "Event ID must start with 'E' followed by 4 digits.")
             return
 
@@ -459,7 +459,7 @@ class SupplierForm:
             return
 
         # Validate supplier ID format
-        if not re.match(r'S\d{4}', supplier_id):
+        if not (r'S\d{4}', supplier_id):
             messagebox.showerror("Error", "Supplier ID must start with 'S' followed by 4 digits.")
             return
 
