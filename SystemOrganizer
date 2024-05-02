@@ -97,6 +97,12 @@ class DataLayer:
     def add_client(self, client):  # Method to add a client to the data layer
         self.clients.append(client)
 
+    def client_exists(self, client_id):
+        """Check if a client with the given ID exists."""
+        all_data = self.read_all_data()
+        clients = all_data.get("clients", {})
+        return client_id in clients
+
     def add_supplier(self, supplier_id, name, address, contact_details):
             # Create a dictionary to represent the supplier
         supplier = {
@@ -151,6 +157,11 @@ class DataLayer:
         with open(self.filename, 'wb') as file:
             pickle.dump(data, file)
 
+    def get_employee_by_id(self, employee_id): # Method to get a employee by ID
+        all_data = self.read_all_data()
+        employees = all_data.get('employees', {})
+        return employees.get(employee_id)
+
     def get_client_by_id(self, client_id):  # Method to get a client by ID
         all_data = self.read_all_data()
         clients = all_data.get("clients", {})
@@ -181,33 +192,29 @@ class DataLayer:
         events = all_data.get("events", {})
         return clients, suppliers, venues, guests, events
 
+
     def display_all_data(self):
         """Display all data stored in the DataLayer."""
-        clients, suppliers, venues, guests, events = self.get_all_data()
+        employees, clients, suppliers, venues, guests, events = self.get_all_data()
 
-        print("Clients:")
+     #Displaying all the detils that is provided for Employees, Clients, Venues, and Guest
+        print("Employees:")
+        for employee_id, employee_data in employees.items():
+            print(f"ID: {employee_id}, Name: {employee_data.name}, Department: {employee_data.department}, Job Title: {employee_data.job_title}, Basic Salary: {employee_data._basic_salary}, Manager ID: {employee_data.manager_id}")
+
+        print("\nClients:")
         for client_id, client_data in clients.items():
-            print(f"ID: {client_id}, Name: {client_data['name']}, Address: {client_data['address']}, Contact: {client_data['contact_details']}")
+            print(f"ID: {client_id}, Name: {client_data.name}, Address: {client_data.address}, Contact: {client_data.contact_details}")
 
-        print("\nSuppliers:")
-        for supplier_id, supplier_data in suppliers.items():
-            print(f"ID: {supplier_id}, Name: {supplier_data['name']}, Address: {supplier_data['address']}, Contact: {supplier_data['contact_details']}")
 
         print("\nVenues:")
         for venue_id, venue_data in venues.items():
-            print(f"ID: {venue_id}, Name: {venue_data['name']}, Address: {venue_data['address']}, Contact: {venue_data['contact']}")
+            print(f"ID: {venue_id}, Name: {venue_data.name}, Address: {venue_data.address}, Contact: {venue_data.contact}")
 
         print("\nGuests:")
         for guest_id, guest_data in guests.items():
-            print(f"ID: {guest_id}, Name: {guest_data['name']}, Address: {guest_data['address']}, Contact: {guest_data['contact_details']}")
+            print(f"ID: {guest_id}, Name: {guest_data.name}, Address: {guest_data.address}, Contact: {guest_data.contact_details}")
 
-        print("\nEvents:")
-        for event_id, event_data in events.items():
-            print(f"ID: {event_id}, Type: {event_data['type']}, Theme: {event_data['theme']}, Date: {event_data['date']}, Time: {event_data['time']}, Duration: {event_data['duration']}, Venue: {event_data['venue_address']}")
-            print(f"Client ID: {event_data['client_id']}, Catering Company: {event_data['catering_company']}, Cleaning Company: {event_data['cleaning_company']}, Decorations Company: {event_data['decorations_company']}, Entertainment Company: {event_data['entertainment_company']}, Furniture Supply Company: {event_data['furniture_supply_company']}, Invoice: {event_data['invoice']}")
-            print("Guests:")
-            for guest_id in event_data['guest_list']:
-                print(f"   Guest ID: {guest_id}")
 
 
 # Define the EmployeeForm class representing the GUI for adding employees
@@ -306,7 +313,7 @@ class EmployeeForm:
             # Clear all entry fields for the next submission.
             self.clear_boxes()
 
-            self.data_layer.display_all_data()
+            self.data_layer.display_all_data() #To display all the data that was provided
 
 
 
@@ -453,12 +460,23 @@ class EventForm:
             messagebox.showerror("Error", f"Client with ID {client_id} does not exist.")
             return
 
+        self.data_layer.add_event(event_id, type, theme, date, time, duration, venue_address, client_id, guest_list, catering_company, cleaning_company, decorations_company, entertainment_company, furniture_supply_company, invoice)
+
         # Add the event.
         messagebox.showinfo("Success", "Event added successfully.")
         # Clear entry fields after submission.
         self.clear_boxes()
 
-        self.data_layer.display_all_data()
+       #Displaying Events data that was provided
+        print("\nEvents:")
+
+        print(f"ID: {event_id}, Type: {type}, Theme: {theme}, Date: {date}, Time: {time}, Duration: {duration}, Venue: {venue_address}")
+        print(f"Client ID: {client_id}, Catering Company: {catering_company}, Cleaning Company: {cleaning_company}, Decorations Company: {decorations_company}, Entertainment Company: {entertainment_company}, Furniture Supply Company: {furniture_supply_company}, Invoice: {invoice}")
+        print("Guests:")
+        for guest_id in guest_list:
+            print(f"   Guest ID: {guest_id}")
+
+        self.data_layer.display_all_data() #To display all the data that was provided
 
 
 
@@ -525,7 +543,7 @@ class SupplierForm:
             return
 
         # Validate supplier ID format
-        if not (r'S\d{4}', supplier_id):
+        if not (supplier_id.startswith('S') and len(supplier_id) == 5 and supplier_id[1:].isdigit()):
             messagebox.showerror("Error", "Supplier ID must start with 'S' followed by 4 digits.")
             return
 
@@ -534,7 +552,11 @@ class SupplierForm:
         messagebox.showinfo("Success", "Supplier added successfully.")
         self.clear_boxes()
 
-        self.data_layer.display_all_data()
+        print("\nSuppliers:")
+        print(f"ID: {supplier_id}, Name: {name}, Address: {address}, Contact: {contact_details}")
+
+
+        self.data_layer.display_all_data() #To display all the data that was provided
 
 # Define the VenueForm class representing the GUI for adding venues
 class VenueForm:
@@ -649,7 +671,7 @@ class VenueForm:
         messagebox.showinfo("Submission", "Venue details submitted successfully.")
         self.clear_boxes()
 
-        self.data_layer.display_all_data()
+        self.data_layer.display_all_data() #To display all the data that was provided
 
 
 
@@ -748,7 +770,7 @@ class ClientForm:
         messagebox.showinfo("Submission", "Client details submitted successfully.")
         self.clear_boxes()
 
-        self.data_layer.display_all_data()
+        self.data_layer.display_all_data() #To display all the data that was provided
 
 
 
@@ -832,7 +854,7 @@ class GuestForm:
         messagebox.showinfo("Submission", "Guest details submitted successfully.")
         self.clear_boxes()
 
-        self.data_layer.display_all_data()
+        self.data_layer.display_all_data() #To display all the data that was provided
 
 
 # Define the App class representing the main application
@@ -869,15 +891,21 @@ class App:
     # Methods to open different forms
     def open_employee_form(self):
         EmployeeForm(self.data_layer)
+        self.data_layer.display_all_data()
+
 
     def open_event_form(self):
         EventForm(self.data_layer)
+        self.data_layer.display_all_data()
+
 
     def open_supplier_form(self):
         SupplierForm(self.data_layer)
+        self.data_layer.display_all_data()
 
     def open_venue_form(self):
         VenueForm(self.data_layer)
+        self.data_layer.display_all_data()
 
     def open_client_form(self):
         ClientForm(self.data_layer)
