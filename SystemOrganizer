@@ -1,0 +1,745 @@
+import pickle 
+import tkinter as tk
+from tkinter import messagebox
+
+# Define the Person class
+class Person:
+    def __init__(self, name):
+        self.name = name
+
+# Define the Employee class inheriting from Person
+class Employee(Person): # Inheritance
+    def __init__(self, name, id_number, department, job_title, basic_salary, manager_id=None):
+        super().__init__(name)
+        self.id_number = id_number
+        self.department = department
+        self.job_title = job_title
+        self._basic_salary = basic_salary
+        self.manager_id = manager_id
+
+    def get_basic_salary(self):
+        return self._basic_salary
+
+    def set_basic_salary(self, basic_salary):
+        self._basic_salary = basic_salary
+
+# Define the Event class
+class Event:
+    def __init__(self, event_id, type, theme, date, time, duration, venue_address, client_id, guest_list, catering_company, cleaning_company, decorations_company, entertainment_company, furniture_supply_company, invoice):
+        self.event_id = event_id
+        self.type = type
+        self.theme = theme
+        self.date = date
+        self.time = time
+        self.duration = duration
+        self.venue_address = venue_address # This line represents a simple association between Event and Venue classes.
+        self.client_id = client_id # Composition with Client class
+        self.guest_list = []  # Composition: Event is composed of multiple Guest objects
+        self.catering_company = catering_company
+        self.cleaning_company = cleaning_company
+        self.decorations_company = decorations_company
+        self.entertainment_company = entertainment_company
+        self.furniture_supply_company = furniture_supply_company
+        self.invoice = invoice
+
+    def add_guest_list(self, guest_list):
+        self.guest_list.append(guest_list)
+
+# Define the Client class
+class Client:
+    def __init__(self, client_id, name, address, contact_details, budget):
+        self.client_id = client_id
+        self.name = name
+        self.address = address
+        self.contact_details = contact_details
+        self.budget = budget
+
+# Define the Guest class
+class Guest:
+    def __init__(self, guest_id, name, address, contact_details):
+        self.guest_id = guest_id
+        self.name = name
+        self.address = address
+        self.contact_details = contact_details
+
+# Define the Venue class
+class Venue:
+    def __init__(self, venue_id, name, address, contact, min_guests, max_guests):
+        self.venue_id = venue_id
+        self.name = name
+        self.address = address
+        self.contact = contact
+        self.min_guests = min_guests
+        self.max_guests = max_guests
+
+# Define the Supplier class
+class Supplier:
+    def __init__(self, supplier_id, name, address, contact_details):
+        self.supplier_id = supplier_id
+        self.name = name
+        self.address = address
+        self.contact_details = contact_details
+
+# Define the DataLayer class for handling data operations
+class DataLayer:
+    def __init__(self, filename):
+        self.filename = filename
+        # Aggregation: The DataLayer class aggregates lists of clients, suppliers, venues, guests, and events.
+        self.clients = []  # Aggregation: List of clients
+        self.suppliers = []  # Aggregation: List of suppliers
+        self.venues = []  # Aggregation: List of venues
+        self.guests = []  # Aggregation: List of guests
+        self.events = []  # Aggregation: List of events
+
+        # Dependency Association: The following methods demonstrate dependency association
+        # by taking instances of other classes (Client, Supplier, Venue, Guest, and Event) as parameters.
+
+    def add_client(self, client):
+        self.clients.append(client)
+
+    def add_supplier(self, supplier):
+        self.suppliers.append(supplier)
+
+    def add_venue(self, venue):
+        self.venues.append(venue)
+
+    def add_guest(self, guest):
+        self.guests.append(guest)
+
+    def add_event(self, event):
+        self.events.append(event)
+
+    def read_all_data(self):
+        try:
+            with open(self.filename, 'rb') as file:
+                data = pickle.load(file)
+        except FileNotFoundError:
+            data = {}
+        return data
+
+    def write_data_to_file(self, data):
+        with open(self.filename, 'wb') as file:
+            pickle.dump(data, file)
+
+    def get_client_by_id(self, client_id):
+        all_data = self.read_all_data()
+        clients = all_data.get("clients", {})
+        return clients.get(client_id)
+
+    def get_supplier_by_id(self, supplier_id):
+        all_data = self.read_all_data()
+        suppliers = all_data.get("suppliers", {})
+        return suppliers.get(supplier_id)
+
+    def get_guest_by_id(self, guest_id):
+        all_data = self.read_all_data()
+        guests = all_data.get("guests", {})
+        return guests.get(guest_id)
+
+    def get_venue_by_id(self, venue_id):
+        all_data = self.read_all_data()
+        venues = all_data.get("venues", {})
+        return venues.get(venue_id)
+
+
+
+# Define the EmployeeForm class representing the GUI for adding employees
+class EmployeeForm:
+    def __init__(self, data_layer):
+        self.data_layer = data_layer
+        self.root = tk.Tk()
+        self.root.geometry("400x300")
+        self.root.title("Employee Form")
+
+        self.name_label = tk.Label(self.root, text="Name:")
+        self.name_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
+        self.name_entry = tk.Entry(self.root)
+        self.name_entry.grid(column=1, row=0, padx=5, pady=5)
+
+        self.id_label = tk.Label(self.root, text="ID Number:")
+        self.id_label.grid(column=0, row=1, padx=5, pady=5, sticky=tk.W)
+        self.id_entry = tk.Entry(self.root)
+        self.id_entry.grid(column=1, row=1, padx=5, pady=5)
+
+        self.department_label = tk.Label(self.root, text="Department:")
+        self.department_label.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W)
+        self.department_entry = tk.Entry(self.root)
+        self.department_entry.grid(column=1, row=2, padx=5, pady=5)
+
+        self.job_title_label = tk.Label(self.root, text="Job Title:")
+        self.job_title_label.grid(column=0, row=3, padx=5, pady=5, sticky=tk.W)
+        self.job_title_entry = tk.Entry(self.root)
+        self.job_title_entry.grid(column=1, row=3, padx=5, pady=5)
+
+        self.basic_salary_label = tk.Label(self.root, text="Basic Salary:")
+        self.basic_salary_label.grid(column=0, row=4, padx=5, pady=5, sticky=tk.W)
+        self.basic_salary_entry = tk.Entry(self.root)
+        self.basic_salary_entry.grid(column=1, row=4, padx=5, pady=5)
+
+        self.manager_id_label = tk.Label(self.root, text="Manager ID:")
+        self.manager_id_label.grid(column=0, row=5, padx=5, pady=5, sticky=tk.W)
+        self.manager_id_entry = tk.Entry(self.root)
+        self.manager_id_entry.grid(column=1, row=5, padx=5, pady=5)
+
+        self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
+        self.submit_button.grid(column=1, row=6, padx=5, pady=5)
+
+        self.root.mainloop()
+
+    def clear_boxes(self):
+        self.name_entry.delete(0, tk.END)
+        self.id_entry.delete(0, tk.END)
+        self.department_entry.delete(0, tk.END)
+        self.job_title_entry.delete(0, tk.END)
+        self.basic_salary_entry.delete(0, tk.END)
+        self.manager_id_entry.delete(0, tk.END)
+
+    def submit(self):
+        name = self.name_entry.get()
+        id_number = self.id_entry.get()
+        department = self.department_entry.get()
+        job_title = self.job_title_entry.get()
+        basic_salary = self.basic_salary_entry.get()
+        manager_id = self.manager_id_entry.get() or None
+
+        try:
+            basic_salary = float(basic_salary)
+        except ValueError:
+            messagebox.showerror("Error", "Basic Salary must be a number.")
+            return
+
+        employee = Employee(name, id_number, department, job_title, basic_salary, manager_id)
+
+        all_employees = self.data_layer.read_all_data().get("employees", {})
+        if id_number in all_employees:
+            messagebox.showinfo("ID Check", f"The ID '{id_number}' already exists for an employee.")
+        else:
+            all_employees[id_number] = employee
+            self.data_layer.write_data_to_file(all_employees)
+            messagebox.showinfo("Submission", "Employee details submitted successfully.")
+            self.clear_boxes()
+
+# Define the EventForm class representing the GUI for adding events
+class EventForm:
+    def __init__(self, data_layer):
+        self.data_layer = data_layer
+        self.root = tk.Tk()
+        self.root.geometry("400x700")
+        self.root.title("Event Form")
+
+        self.event_id_label = tk.Label(self.root, text="Event ID:")
+        self.event_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
+        self.event_id_entry = tk.Entry(self.root)
+        self.event_id_entry.grid(column=1, row=0, padx=5, pady=5)
+
+        # Add other event details labels and entry fields here...
+        self.type_label = tk.Label(self.root, text="Type:")
+        self.type_label.grid(column=0, row=1, padx=5, pady=5, sticky=tk.W)
+        self.type_entry = tk.Entry(self.root)
+        self.type_entry.grid(column=1, row=1, padx=5, pady=5)
+
+        self.theme_label = tk.Label(self.root, text="Theme:")
+        self.theme_label.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W)
+        self.theme_entry = tk.Entry(self.root)
+        self.theme_entry.grid(column=1, row=2, padx=5, pady=5)
+
+        self.date_label = tk.Label(self.root, text="Date:")
+        self.date_label.grid(column=0, row=3, padx=5, pady=5, sticky=tk.W)
+        self.date_entry = tk.Entry(self.root)
+        self.date_entry.grid(column=1, row=3, padx=5, pady=5)
+
+        self.time_label = tk.Label(self.root, text="Time:")
+        self.time_label.grid(column=0, row=4, padx=5, pady=5, sticky=tk.W)
+        self.time_entry = tk.Entry(self.root)
+        self.time_entry.grid(column=1, row=4, padx=5, pady=5)
+
+        self.duration_label = tk.Label(self.root, text="Duration:")
+        self.duration_label.grid(column=0, row=5, padx=5, pady=5, sticky=tk.W)
+        self.duration_entry = tk.Entry(self.root)
+        self.duration_entry.grid(column=1, row=5, padx=5, pady=5)
+
+        self.venue_address_label = tk.Label(self.root, text="Venue Address:")
+        self.venue_address_label.grid(column=0, row=6, padx=5, pady=5, sticky=tk.W)
+        self.venue_address_entry = tk.Entry(self.root)
+        self.venue_address_entry.grid(column=1, row=6, padx=5, pady=5)
+
+        self.client_id_label = tk.Label(self.root, text="Client ID:")
+        self.client_id_label.grid(column=0, row=7, padx=5, pady=5, sticky=tk.W)
+        self.client_id_entry = tk.Entry(self.root)
+        self.client_id_entry.grid(column=1, row=7, padx=5, pady=5)
+
+        self.guest_list_label = tk.Label(self.root, text="Guest List:")
+        self.guest_list_label.grid(column=0, row=8, padx=5, pady=5, sticky=tk.W)
+        self.guest_list_entry = tk.Entry(self.root)
+        self.guest_list_entry.grid(column=1, row=8, padx=5, pady=5)
+
+        self.catering_company_label = tk.Label(self.root, text="Catering Company:")
+        self.catering_company_label.grid(column=0, row=9, padx=5, pady=5, sticky=tk.W)
+        self.catering_company_entry = tk.Entry(self.root)
+        self.catering_company_entry.grid(column=1, row=9, padx=5, pady=5)
+
+        self.cleaning_company_label = tk.Label(self.root, text="Cleaning Company:")
+        self.cleaning_company_label.grid(column=0, row=10, padx=5, pady=5, sticky=tk.W)
+        self.cleaning_company_entry = tk.Entry(self.root)
+        self.cleaning_company_entry.grid(column=1, row=10, padx=5, pady=5)
+
+        self.decorations_company_label = tk.Label(self.root, text="Decorations Company:")
+        self.decorations_company_label.grid(column=0, row=11, padx=5, pady=5, sticky=tk.W)
+        self.decorations_company_entry = tk.Entry(self.root)
+        self.decorations_company_entry.grid(column=1, row=11, padx=5, pady=5)
+
+        self.entertainment_company_label = tk.Label(self.root, text="Entertainment Company:")
+        self.entertainment_company_label.grid(column=0, row=12, padx=5, pady=5, sticky=tk.W)
+        self.entertainment_company_entry = tk.Entry(self.root)
+        self.entertainment_company_entry.grid(column=1, row=12, padx=5, pady=5)
+
+        self.furniture_supply_company_label = tk.Label(self.root, text="Furniture Supply Company:")
+        self.furniture_supply_company_label.grid(column=0, row=13, padx=5, pady=5, sticky=tk.W)
+        self.furniture_supply_company_entry = tk.Entry(self.root)
+        self.furniture_supply_company_entry.grid(column=1, row=13, padx=5, pady=5)
+
+        self.invoice_label = tk.Label(self.root, text="Invoice:")
+        self.invoice_label.grid(column=0, row=14, padx=5, pady=5, sticky=tk.W)
+        self.invoice_entry = tk.Entry(self.root)
+        self.invoice_entry.grid(column=1, row=14, padx=5, pady=5)
+
+        self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
+        self.submit_button.grid(column=1, row=15, padx=5, pady=5)
+
+        self.root.mainloop()
+
+    def clear_boxes(self):
+        self.event_id_entry.delete(0, tk.END)
+        self.type_entry.delete(0, tk.END)
+        self.theme_entry.delete(0, tk.END)
+        self.date_entry.delete(0, tk.END)
+        self.time_entry.delete(0, tk.END)
+        self.duration_entry.delete(0, tk.END)
+        self.venue_address_entry.delete(0, tk.END)
+        self.client_id_entry.delete(0, tk.END)
+        self.guest_list_entry.delete(0, tk.END)
+        self.catering_company_entry.delete(0, tk.END)
+        self.cleaning_company_entry.delete(0, tk.END)
+        self.decorations_company_entry.delete(0, tk.END)
+        self.entertainment_company_entry.delete(0, tk.END)
+        self.furniture_supply_company_entry.delete(0, tk.END)
+        self.invoice_entry.delete(0, tk.END)
+
+    def submit(self):
+        event_id = self.event_id_entry.get()
+        type = self.type_entry.get()
+        theme = self.theme_entry.get()
+        date = self.date_entry.get()
+        time = self.time_entry.get()
+        duration = self.duration_entry.get()
+        venue_address = self.venue_address_entry.get()
+        client_id = self.client_id_entry.get()
+        guest_list = self.guest_list_entry.get()
+        catering_company = self.catering_company_entry.get()
+        cleaning_company = self.cleaning_company_entry.get()
+        decorations_company = self.decorations_company_entry.get()
+        entertainment_company = self.entertainment_company_entry.get()
+        furniture_supply_company = self.furniture_supply_company_entry.get()
+        invoice = self.invoice_entry.get()
+
+        if not event_id or not type or not date or not time or not venue_address or not client_id:
+            messagebox.showerror("Error", "Please fill in all required fields.")
+            return
+
+            # Validate event ID format
+        if not re.match(r'E\d{4}', event_id):
+            messagebox.showerror("Error", "Event ID must start with 'E' followed by 4 digits.")
+            return
+
+            # Check if the client ID exists
+        if not self.data_layer.client_exists(client_id):
+            messagebox.showerror("Error", f"Client with ID {client_id} does not exist.")
+            return
+
+            # Add the event
+        self.data_layer.add_event(event_id, type, theme, date, time, duration, venue_address, client_id,
+                                  guest_list, catering_company, cleaning_company, decorations_company,
+                                  entertainment_company, furniture_supply_company, invoice)
+        messagebox.showinfo("Success", "Event added successfully.")
+        self.clear_boxes()
+
+
+
+# Define the SupplierForm class representing the GUI for adding suppliers
+class SupplierForm:
+    def __init__(self, data_layer):
+        self.data_layer = data_layer
+        self.root = tk.Tk()
+        self.root.geometry("400x300")
+        self.root.title("Supplier Form")
+
+        self.supplier_id_label = tk.Label(self.root, text="Supplier ID:")
+        self.supplier_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
+        self.supplier_id_entry = tk.Entry(self.root)
+        self.supplier_id_entry.grid(column=1, row=0, padx=5, pady=5)
+
+        self.name_label = tk.Label(self.root, text="Name:")
+        self.name_label.grid(column=0, row=1, padx=5, pady=5, sticky=tk.W)
+        self.name_entry = tk.Entry(self.root)
+        self.name_entry.grid(column=1, row=1, padx=5, pady=5)
+
+        self.address_label = tk.Label(self.root, text="Address:")
+        self.address_label.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W)
+        self.address_entry = tk.Entry(self.root)
+        self.address_entry.grid(column=1, row=2, padx=5, pady=5)
+
+        self.contact_label = tk.Label(self.root, text="Contact Details:")
+        self.contact_label.grid(column=0, row=3, padx=5, pady=5, sticky=tk.W)
+        self.contact_entry = tk.Entry(self.root)
+        self.contact_entry.grid(column=1, row=3, padx=5, pady=5)
+
+        self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
+        self.submit_button.grid(column=1, row=4, padx=5, pady=5)
+
+        self.root.mainloop()
+
+    def clear_boxes(self):
+        self.supplier_id_entry.delete(0, tk.END)
+        self.name_entry.delete(0, tk.END)
+        self.address_entry.delete(0, tk.END)
+        self.contact_entry.delete(0, tk.END)
+
+    def submit(self):
+        supplier_id = self.supplier_id_entry.get()
+        name = self.name_entry.get()
+        address = self.address_entry.get()
+        contact_details = self.contact_entry.get()
+
+        # Validate fields
+        if not supplier_id or not name or not address or not contact_details:
+            messagebox.showerror("Error", "Please fill in all required fields.")
+            return
+
+        # Validate supplier ID format
+        if not re.match(r'S\d{4}', supplier_id):
+            messagebox.showerror("Error", "Supplier ID must start with 'S' followed by 4 digits.")
+            return
+
+        # Add the supplier
+        self.data_layer.add_supplier(supplier_id, name, address, contact_details)
+        messagebox.showinfo("Success", "Supplier added successfully.")
+        self.clear_boxes()
+
+
+
+
+# Define the VenueForm class representing the GUI for adding venues
+class VenueForm:
+    def __init__(self, data_layer):
+        self.data_layer = data_layer
+        self.root = tk.Tk()
+        self.root.geometry("400x300")
+        self.root.title("Venue Form")
+
+        self.venue_id_label = tk.Label(self.root, text="Venue ID:")
+        self.venue_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
+        self.venue_id_entry = tk.Entry(self.root)
+        self.venue_id_entry.grid(column=1, row=0, padx=5, pady=5)
+
+        # Add other venue details labels and entry fields here...
+        self.name_label = tk.Label(self.root, text="Name:")
+        self.name_label.grid(column=0, row=1, padx=5, pady=5, sticky=tk.W)
+        self.name_entry = tk.Entry(self.root)
+        self.name_entry.grid(column=1, row=1, padx=5, pady=5)
+
+        self.address_label = tk.Label(self.root, text="Address:")
+        self.address_label.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W)
+        self.address_entry = tk.Entry(self.root)
+        self.address_entry.grid(column=1, row=2, padx=5, pady=5)
+
+        self.contact_label = tk.Label(self.root, text="Contact:")
+        self.contact_label.grid(column=0, row=3, padx=5, pady=5, sticky=tk.W)
+        self.contact_entry = tk.Entry(self.root)
+        self.contact_entry.grid(column=1, row=3, padx=5, pady=5)
+
+        self.min_guests_label = tk.Label(self.root, text="Min Guests:")
+        self.min_guests_label.grid(column=0, row=4, padx=5, pady=5, sticky=tk.W)
+        self.min_guests_entry = tk.Entry(self.root)
+        self.min_guests_entry.grid(column=1, row=4, padx=5, pady=5)
+
+        self.max_guests_label = tk.Label(self.root, text="Max Guests:")
+        self.max_guests_label.grid(column=0, row=5, padx=5, pady=5, sticky=tk.W)
+        self.max_guests_entry = tk.Entry(self.root)
+        self.max_guests_entry.grid(column=1, row=5, padx=5, pady=5)
+
+        self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
+        self.submit_button.grid(column=1, row=6, padx=5, pady=5)
+
+        self.root.mainloop()
+
+    def clear_boxes(self):
+        self.venue_id_entry.delete(0, tk.END)
+        self.name_entry.delete(0, tk.END)
+        self.address_entry.delete(0, tk.END)
+        self.contact_entry.delete(0, tk.END)
+        self.min_guests_entry.delete(0, tk.END)
+        self.max_guests_entry.delete(0, tk.END)
+
+    def submit(self):
+        venue_id = self.venue_id_entry.get()
+        name = self.name_entry.get()
+        address = self.address_entry.get()
+        contact = self.contact_entry.get()
+        min_guests = self.min_guests_entry.get()
+        max_guests = self.max_guests_entry.get()
+
+        # Validate name is not empty
+        if not name:
+            messagebox.showerror("Error", "Name cannot be empty.")
+            return
+
+        # Validate address is not empty
+        if not address:
+            messagebox.showerror("Error", "Address cannot be empty.")
+            return
+
+        # Validate venue ID is not empty
+        if not venue_id:
+            messagebox.showerror("Error", "Venue ID cannot be empty.")
+            return
+
+         # Validate contact is not empty
+        if not contact:
+            messagebox.showerror("Error", "Contact cannot be empty.")
+            return
+
+        # Validate min_guests is not empty
+        if not min_guests:
+            messagebox.showerror("Error", "Min Guests cannot be empty.")
+            return
+
+        # Validate max_guests is not empty
+        if not max_guests:
+            messagebox.showerror("Error", "Max Guests cannot be empty.")
+            return
+
+        # Check if venue ID already exists
+        if self.data_layer.get_venue_by_id(venue_id):
+            messagebox.showerror("Error", f"Venue ID '{venue_id}' already exists.")
+            return
+
+        # Create Venue instance and save data
+        venue = Venue(venue_id, name, address, contact, min_guests, max_guests)
+        all_venues = self.data_layer.read_all_data().get("venues", {})
+        all_venues[venue_id] = venue
+        self.data_layer.write_data_to_file({"venues": all_venues})
+        messagebox.showinfo("Submission", "Venue details submitted successfully.")
+        self.clear_boxes()
+
+
+# Define the ClientForm class representing the GUI for adding clients
+class ClientForm:
+    def __init__(self, data_layer):
+        self.data_layer = data_layer
+        self.root = tk.Tk()
+        self.root.geometry("400x300")
+        self.root.title("Client Form")
+
+        self.client_id_label = tk.Label(self.root, text="Client ID:")
+        self.client_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
+        self.client_id_entry = tk.Entry(self.root)
+        self.client_id_entry.grid(column=1, row=0, padx=5, pady=5)
+
+        # Add other client details labels and entry fields here...
+        self.name_label = tk.Label(self.root, text="Name:")
+        self.name_label.grid(column=0, row=1, padx=5, pady=5, sticky=tk.W)
+        self.name_entry = tk.Entry(self.root)
+        self.name_entry.grid(column=1, row=1, padx=5, pady=5)
+
+        self.address_label = tk.Label(self.root, text="Address:")
+        self.address_label.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W)
+        self.address_entry = tk.Entry(self.root)
+        self.address_entry.grid(column=1, row=2, padx=5, pady=5)
+
+        self.contact_details_label = tk.Label(self.root, text="Contact Details:")
+        self.contact_details_label.grid(column=0, row=3, padx=5, pady=5, sticky=tk.W)
+        self.contact_details_entry = tk.Entry(self.root)
+        self.contact_details_entry.grid(column=1, row=3, padx=5, pady=5)
+
+        self.budget_label = tk.Label(self.root, text="Budget:")
+        self.budget_label.grid(column=0, row=4, padx=5, pady=5, sticky=tk.W)
+        self.budget_entry = tk.Entry(self.root)
+        self.budget_entry.grid(column=1, row=4, padx=5, pady=5)
+
+        self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
+        self.submit_button.grid(column=1, row=6, padx=5, pady=5)
+
+        self.root.mainloop()
+
+    def clear_boxes(self):
+        self.client_id_entry.delete(0, tk.END)
+        self.name_entry.delete(0, tk.END)
+        self.address_entry.delete(0, tk.END)
+        self.contact_details_entry.delete(0, tk.END)
+        self.budget_entry.delete(0, tk.END)
+
+    def submit(self):
+        client_id = self.client_id_entry.get()
+        name = self.name_entry.get()
+        address = self.address_entry.get()
+        contact_details = self.contact_details_entry.get()
+        budget = self.budget_entry.get()
+
+        # Validate name is not empty
+        if not name:
+            messagebox.showerror("Error", "Name cannot be empty.")
+            return
+
+        # Validate address is not empty
+        if not address:
+            messagebox.showerror("Error", "Address cannot be empty.")
+            return
+
+        # Validate client ID is not empty
+        if not client_id:
+            messagebox.showerror("Error", "Client ID cannot be empty.")
+            return
+
+        # Check if client ID already exists
+        if self.data_layer.get_client_by_id(client_id):
+            messagebox.showerror("Error", f"Client ID '{client_id}' already exists.")
+            return
+
+        # Validate budget is a valid number
+        try:
+            budget = float(budget)
+        except ValueError:
+            messagebox.showerror("Error", "Budget must be a number.")
+            return
+
+        # Create Client instance and save data
+        client = Client(client_id, name, address, contact_details, budget)
+        all_clients = self.data_layer.read_all_data().get("clients", {})
+        all_clients[client_id] = client
+        self.data_layer.write_data_to_file({"clients": all_clients})
+        messagebox.showinfo("Submission", "Client details submitted successfully.")
+        self.clear_boxes()
+
+
+
+# Define the GuestForm class representing the GUI for adding guests
+class GuestForm:
+    def __init__(self, data_layer):
+        self.data_layer = data_layer
+        self.root = tk.Tk()
+        self.root.geometry("400x300")
+        self.root.title("Guest Form")
+
+        self.guest_id_label = tk.Label(self.root, text="Guest ID:")
+        self.guest_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
+        self.guest_id_entry = tk.Entry(self.root)
+        self.guest_id_entry.grid(column=1, row=0, padx=5, pady=5)
+
+        self.name_label = tk.Label(self.root, text="Name:")
+        self.name_label.grid(column=0, row=1, padx=5, pady=5, sticky=tk.W)
+        self.name_entry = tk.Entry(self.root)
+        self.name_entry.grid(column=1, row=1, padx=5, pady=5)
+
+        self.address_label = tk.Label(self.root, text="Address:")
+        self.address_label.grid(column=0, row=2, padx=5, pady=5, sticky=tk.W)
+        self.address_entry = tk.Entry(self.root)
+        self.address_entry.grid(column=1, row=2, padx=5, pady=5)
+
+        self.contact_label = tk.Label(self.root, text="Contact Details:")
+        self.contact_label.grid(column=0, row=3, padx=5, pady=5, sticky=tk.W)
+        self.contact_entry = tk.Entry(self.root)
+        self.contact_entry.grid(column=1, row=3, padx=5, pady=5)
+
+        self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
+        self.submit_button.grid(column=1, row=4, padx=5, pady=5)
+
+        self.root.mainloop()
+
+    def clear_boxes(self):
+        self.guest_id_entry.delete(0, tk.END)
+        self.name_entry.delete(0, tk.END)
+        self.address_entry.delete(0, tk.END)
+        self.contact_entry.delete(0, tk.END)
+
+    def submit(self):
+        guest_id = self.guest_id_entry.get()
+        name = self.name_entry.get()
+        address = self.address_entry.get()
+        contact_details = self.contact_entry.get()
+
+        # Validate name is not empty
+        if not name:
+            messagebox.showerror("Error", "Name cannot be empty.")
+            return
+
+        # Validate address is not empty
+        if not address:
+            messagebox.showerror("Error", "Address cannot be empty.")
+            return
+
+        # Validate guest ID is not empty
+        if not guest_id:
+            messagebox.showerror("Error", "Guest ID cannot be empty.")
+            return
+
+        # Check if guest ID already exists
+        if self.data_layer.get_guest_by_id(guest_id):
+            messagebox.showerror("Error", f"Guest ID '{guest_id}' already exists.")
+            return
+
+        # Create Guest instance and save data
+        guest = Guest(guest_id, name, address, contact_details)
+        all_guests = self.data_layer.read_all_data().get("guests", {})
+        all_guests[guest_id] = guest
+        self.data_layer.write_data_to_file({"guests": all_guests})
+        messagebox.showinfo("Submission", "Guest details submitted successfully.")
+        self.clear_boxes()
+
+# Define the App class representing the main application
+class App:
+    def __init__(self):
+        self.data_layer = DataLayer("company_data.pkl")
+        self.root = tk.Tk()
+        self.root.title("Company Management System")
+        self.root.geometry("400x300")
+
+        self.employee_button = tk.Button(self.root, text="Add Employee", command=self.open_employee_form)
+        self.employee_button.pack(pady=10)
+
+        self.event_button = tk.Button(self.root, text="Add Event", command=self.open_event_form)
+        self.event_button.pack(pady=10)
+
+        self.supplier_button = tk.Button(self.root, text="Add Supplier", command=self.open_supplier_form)
+        self.supplier_button.pack(pady=10)
+
+        self.venue_button = tk.Button(self.root, text="Add Venue", command=self.open_venue_form)
+        self.venue_button.pack(pady=10)
+
+        self.client_button = tk.Button(self.root, text="Add Client", command=self.open_client_form)
+        self.client_button.pack(pady=10)
+
+        self.guest_button = tk.Button(self.root, text="Add Guest", command=self.open_guest_form)
+        self.guest_button.pack(pady=10)
+
+        self.root.mainloop()
+
+    def open_employee_form(self):
+        EmployeeForm(self.data_layer)
+
+    def open_event_form(self):
+        EventForm(self.data_layer)
+
+    def open_supplier_form(self):
+        SupplierForm(self.data_layer)
+
+    def open_venue_form(self):
+        VenueForm(self.data_layer)
+
+    def open_client_form(self):
+        ClientForm(self.data_layer)
+
+    def open_guest_form(self):
+        GuestForm(self.data_layer)
+
+# Creating an instance of the App class
+app = App()
