@@ -97,7 +97,15 @@ class DataLayer:
     def add_client(self, client):  # Method to add a client to the data layer
         self.clients.append(client)
 
-    def add_supplier(self, supplier):  # Method to add a supplier to the data layer
+    def add_supplier(self, supplier_id, name, address, contact_details):
+            # Create a dictionary to represent the supplier
+        supplier = {
+            "supplier_id": supplier_id,
+            "name": name,
+            "address": address,
+            "contact_details": contact_details
+        }
+            # Append the supplier to the list of suppliers
         self.suppliers.append(supplier)
 
     def add_venue(self, venue):  # Method to add a venue to the data layer
@@ -141,6 +149,43 @@ class DataLayer:
         venues = all_data.get("venues", {})
         return venues.get(venue_id)
 
+    def get_all_data(self):
+        """Retrieve all data stored in the DataLayer."""
+        all_data = self.read_all_data()
+        clients = all_data.get("clients", {})
+        suppliers = all_data.get("suppliers", {})
+        venues = all_data.get("venues", {})
+        guests = all_data.get("guests", {})
+        events = all_data.get("events", {})
+        return clients, suppliers, venues, guests, events
+
+    def display_all_data(self):
+        """Display all data stored in the DataLayer."""
+        clients, suppliers, venues, guests, events = self.get_all_data()
+
+        print("Clients:")
+        for client_id, client_data in clients.items():
+            print(f"ID: {client_id}, Name: {client_data['name']}, Address: {client_data['address']}, Contact: {client_data['contact_details']}")
+
+        print("\nSuppliers:")
+        for supplier_id, supplier_data in suppliers.items():
+            print(f"ID: {supplier_id}, Name: {supplier_data['name']}, Address: {supplier_data['address']}, Contact: {supplier_data['contact_details']}")
+
+        print("\nVenues:")
+        for venue_id, venue_data in venues.items():
+            print(f"ID: {venue_id}, Name: {venue_data['name']}, Address: {venue_data['address']}, Contact: {venue_data['contact']}")
+
+        print("\nGuests:")
+        for guest_id, guest_data in guests.items():
+            print(f"ID: {guest_id}, Name: {guest_data['name']}, Address: {guest_data['address']}, Contact: {guest_data['contact_details']}")
+
+        print("\nEvents:")
+        for event_id, event_data in events.items():
+            print(f"ID: {event_id}, Type: {event_data['type']}, Theme: {event_data['theme']}, Date: {event_data['date']}, Time: {event_data['time']}, Duration: {event_data['duration']}, Venue: {event_data['venue_address']}")
+            print(f"Client ID: {event_data['client_id']}, Catering Company: {event_data['catering_company']}, Cleaning Company: {event_data['cleaning_company']}, Decorations Company: {event_data['decorations_company']}, Entertainment Company: {event_data['entertainment_company']}, Furniture Supply Company: {event_data['furniture_supply_company']}, Invoice: {event_data['invoice']}")
+            print("Guests:")
+            for guest_id in event_data['guest_list']:
+                print(f"   Guest ID: {guest_id}")
 
 
 # Define the EmployeeForm class representing the GUI for adding employees
@@ -811,3 +856,7 @@ class App:
 
 # Creating an instance of the App class
 app = App()
+
+# Usage example
+data_layer = DataLayer("company_data.pkl")
+data_layer.display_all_data()
