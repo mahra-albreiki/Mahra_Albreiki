@@ -1,6 +1,6 @@
-import pickle 
-import tkinter as tk
-from tkinter import messagebox
+import pickle # Import the pickle module for serialization
+import tkinter as tk # Importing tkinter for GUI
+from tkinter import messagebox # Importing messagebox from tkinter for displaying messages
 
 # Define the Person class
 class Person:
@@ -8,20 +8,20 @@ class Person:
         self.name = name
 
 # Define the Employee class inheriting from Person
-class Employee(Person): # Inheritance
+class Employee(Person): # Inheritance 
     def __init__(self, name, id_number, department, job_title, basic_salary, manager_id=None):
-        super().__init__(name)
-        self.id_number = id_number
-        self.department = department
-        self.job_title = job_title
-        self._basic_salary = basic_salary
-        self.manager_id = manager_id
+        super().__init__(name) # Assigning name attribute for Employee's name
+        self.id_number = id_number # Assigning id_number attribute for Employee's ID number
+        self.department = department # Assigning department attribute for Employee's department
+        self.job_title = job_title # Assigning job_title attribute
+        self._basic_salary = basic_salary # Assigning basic_salary attribute
+        self.manager_id = manager_id # Assigning manager_id attribute (if applicable)
 
-    def get_basic_salary(self):
-        return self._basic_salary
+   def get_basic_salary(self):  # Method to retrieve the basic salary
+    return self._basic_salary
 
-    def set_basic_salary(self, basic_salary):
-        self._basic_salary = basic_salary
+def set_basic_salary(self, basic_salary):  # Method to set the basic salary
+    self._basic_salary = basic_salary
 
 # Define the Event class
 class Event:
@@ -32,8 +32,8 @@ class Event:
         self.date = date
         self.time = time
         self.duration = duration
-        self.venue_address = venue_address # This line represents a simple association between Event and Venue classes.
-        self.client_id = client_id # Composition with Client class
+        self.venue_address = venue_address  # This line represents a simple association between Event and Venue classes.
+        self.client_id = client_id  # Composition with Client class
         self.guest_list = []  # Composition: Event is composed of multiple Guest objects
         self.catering_company = catering_company
         self.cleaning_company = cleaning_company
@@ -42,7 +42,7 @@ class Event:
         self.furniture_supply_company = furniture_supply_company
         self.invoice = invoice
 
-    def add_guest_list(self, guest_list):
+    def add_guest_list(self, guest_list):  # Method to add guests to the event's guest list
         self.guest_list.append(guest_list)
 
 # Define the Client class
@@ -94,22 +94,22 @@ class DataLayer:
         # Dependency Association: The following methods demonstrate dependency association
         # by taking instances of other classes (Client, Supplier, Venue, Guest, and Event) as parameters.
 
-    def add_client(self, client):
+    def add_client(self, client):  # Method to add a client to the data layer
         self.clients.append(client)
 
-    def add_supplier(self, supplier):
+    def add_supplier(self, supplier):  # Method to add a supplier to the data layer
         self.suppliers.append(supplier)
 
-    def add_venue(self, venue):
+    def add_venue(self, venue):  # Method to add a venue to the data layer
         self.venues.append(venue)
 
-    def add_guest(self, guest):
+    def add_guest(self, guest):  # Method to add a guest to the data layer
         self.guests.append(guest)
 
-    def add_event(self, event):
+    def add_event(self, event):  # Method to add an event to the data layer
         self.events.append(event)
 
-    def read_all_data(self):
+    def read_all_data(self):  # Method to read all data from file
         try:
             with open(self.filename, 'rb') as file:
                 data = pickle.load(file)
@@ -117,26 +117,26 @@ class DataLayer:
             data = {}
         return data
 
-    def write_data_to_file(self, data):
+    def write_data_to_file(self, data):  # Method to write data to file
         with open(self.filename, 'wb') as file:
             pickle.dump(data, file)
 
-    def get_client_by_id(self, client_id):
+    def get_client_by_id(self, client_id):  # Method to get a client by ID
         all_data = self.read_all_data()
         clients = all_data.get("clients", {})
         return clients.get(client_id)
 
-    def get_supplier_by_id(self, supplier_id):
+    def get_supplier_by_id(self, supplier_id):  # Method to get a supplier by ID
         all_data = self.read_all_data()
         suppliers = all_data.get("suppliers", {})
         return suppliers.get(supplier_id)
 
-    def get_guest_by_id(self, guest_id):
+    def get_guest_by_id(self, guest_id):  # Method to get a guest by ID
         all_data = self.read_all_data()
         guests = all_data.get("guests", {})
         return guests.get(guest_id)
 
-    def get_venue_by_id(self, venue_id):
+    def get_venue_by_id(self, venue_id):  # Method to get a venue by ID
         all_data = self.read_all_data()
         venues = all_data.get("venues", {})
         return venues.get(venue_id)
@@ -146,11 +146,16 @@ class DataLayer:
 # Define the EmployeeForm class representing the GUI for adding employees
 class EmployeeForm:
     def __init__(self, data_layer):
+        # Initialize EmployeeForm with a data_layer, usually for handling data operations.
         self.data_layer = data_layer
+        # Create the main window for the form.
         self.root = tk.Tk()
+        # Set the dimensions for the main window.
         self.root.geometry("400x300")
+        # Set the title for the main window.
         self.root.title("Employee Form")
 
+        # Create labels and entry fields for various employee attributes.
         self.name_label = tk.Label(self.root, text="Name:")
         self.name_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
         self.name_entry = tk.Entry(self.root)
@@ -181,11 +186,14 @@ class EmployeeForm:
         self.manager_id_entry = tk.Entry(self.root)
         self.manager_id_entry.grid(column=1, row=5, padx=5, pady=5)
 
+        # Create a submit button which calls the submit method when clicked.
         self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
         self.submit_button.grid(column=1, row=6, padx=5, pady=5)
 
+        # Start the GUI application.
         self.root.mainloop()
 
+    # Clear all entry fields in the form.
     def clear_boxes(self):
         self.name_entry.delete(0, tk.END)
         self.id_entry.delete(0, tk.END)
@@ -194,7 +202,9 @@ class EmployeeForm:
         self.basic_salary_entry.delete(0, tk.END)
         self.manager_id_entry.delete(0, tk.END)
 
+    # Handle submission of employee details.
     def submit(self):
+        # Retrieve values from entry fields.
         name = self.name_entry.get()
         id_number = self.id_entry.get()
         department = self.department_entry.get()
@@ -203,36 +213,48 @@ class EmployeeForm:
         manager_id = self.manager_id_entry.get() or None
 
         try:
+            # Attempt to convert basic_salary to a float.
             basic_salary = float(basic_salary)
         except ValueError:
+            # If conversion fails, show an error message.
             messagebox.showerror("Error", "Basic Salary must be a number.")
             return
 
+        # Create an Employee object with the provided details.
         employee = Employee(name, id_number, department, job_title, basic_salary, manager_id)
 
+        # Retrieve all existing employees from the data layer.
         all_employees = self.data_layer.read_all_data().get("employees", {})
+        # Check if the provided ID already exists.
         if id_number in all_employees:
+            # If ID exists, display a message indicating the conflict.
             messagebox.showinfo("ID Check", f"The ID '{id_number}' already exists for an employee.")
         else:
+            # If ID is unique, add the new employee to the data layer.
             all_employees[id_number] = employee
+            # Write updated data back to the data layer.
             self.data_layer.write_data_to_file(all_employees)
+            # Display a success message.
             messagebox.showinfo("Submission", "Employee details submitted successfully.")
+            # Clear all entry fields for the next submission.
             self.clear_boxes()
+
 
 # Define the EventForm class representing the GUI for adding events
 class EventForm:
+# Initialize the EventForm class with a data layer and set up the tkinter window.
     def __init__(self, data_layer):
         self.data_layer = data_layer
         self.root = tk.Tk()
         self.root.geometry("400x700")
         self.root.title("Event Form")
 
+# Create labels and entry fields for event details that includes ( Event ID, Type,Theme, Date, Time, Duration, Venue Address, Client ID, Guest List, Catering Company, Cleaning Company, Decorations Company, Entertainment Company, Furniture Supply Company, Invoice) .
         self.event_id_label = tk.Label(self.root, text="Event ID:")
         self.event_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
         self.event_id_entry = tk.Entry(self.root)
         self.event_id_entry.grid(column=1, row=0, padx=5, pady=5)
 
-        # Add other event details labels and entry fields here...
         self.type_label = tk.Label(self.root, text="Type:")
         self.type_label.grid(column=0, row=1, padx=5, pady=5, sticky=tk.W)
         self.type_entry = tk.Entry(self.root)
@@ -303,12 +325,15 @@ class EventForm:
         self.invoice_entry = tk.Entry(self.root)
         self.invoice_entry.grid(column=1, row=14, padx=5, pady=5)
 
+# Create the Submit button.
         self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
         self.submit_button.grid(column=1, row=15, padx=5, pady=5)
 
+# Start the tkinter event loop.
         self.root.mainloop()
 
     def clear_boxes(self):
+# Clear all entry fields.
         self.event_id_entry.delete(0, tk.END)
         self.type_entry.delete(0, tk.END)
         self.theme_entry.delete(0, tk.END)
@@ -326,6 +351,7 @@ class EventForm:
         self.invoice_entry.delete(0, tk.END)
 
     def submit(self):
+ # Get values from entry fields.
         event_id = self.event_id_entry.get()
         type = self.type_entry.get()
         theme = self.theme_entry.get()
@@ -342,42 +368,54 @@ class EventForm:
         furniture_supply_company = self.furniture_supply_company_entry.get()
         invoice = self.invoice_entry.get()
 
+        # Check if required fields are filled.
         if not event_id or not type or not date or not time or not venue_address or not client_id:
             messagebox.showerror("Error", "Please fill in all required fields.")
             return
 
-            # Validate event ID format
+        # Validate event ID format.
         if not re.match(r'E\d{4}', event_id):
             messagebox.showerror("Error", "Event ID must start with 'E' followed by 4 digits.")
             return
 
-            # Check if the client ID exists
+        # Check if the client ID exists.
         if not self.data_layer.client_exists(client_id):
             messagebox.showerror("Error", f"Client with ID {client_id} does not exist.")
             return
 
-            # Add the event
-        self.data_layer.add_event(event_id, type, theme, date, time, duration, venue_address, client_id,
-                                  guest_list, catering_company, cleaning_company, decorations_company,
-                                  entertainment_company, furniture_supply_company, invoice)
+        # Add the event.
+        self.data_layer.add_event(event_id, type, theme, date, time, duration, venue_address, client_id, guest_list, catering_company, cleaning_company, decorations_company, entertainment_company, furniture_supply_company, invoice)
         messagebox.showinfo("Success", "Event added successfully.")
+        # Clear entry fields after submission.
         self.clear_boxes()
 
 
 
 # Define the SupplierForm class representing the GUI for adding suppliers
+# Import the necessary module for GUI
+import tkinter as tk
+from tkinter import messagebox
+import re
+
+# Define the SupplierForm class representing the GUI for adding suppliers
 class SupplierForm:
     def __init__(self, data_layer):
+        # Initialize SupplierForm instance with data_layer
         self.data_layer = data_layer
+        # Create the root window
         self.root = tk.Tk()
+        # Set the dimensions of the root window
         self.root.geometry("400x300")
+        # Set the title of the root window
         self.root.title("Supplier Form")
 
+        # Create and place labels and entry fields for Supplier ID
         self.supplier_id_label = tk.Label(self.root, text="Supplier ID:")
         self.supplier_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
         self.supplier_id_entry = tk.Entry(self.root)
         self.supplier_id_entry.grid(column=1, row=0, padx=5, pady=5)
 
+        # Create and place labels and entry fields for Name, Address, and Contact
         self.name_label = tk.Label(self.root, text="Name:")
         self.name_label.grid(column=0, row=1, padx=5, pady=5, sticky=tk.W)
         self.name_entry = tk.Entry(self.root)
@@ -393,18 +431,23 @@ class SupplierForm:
         self.contact_entry = tk.Entry(self.root)
         self.contact_entry.grid(column=1, row=3, padx=5, pady=5)
 
+        # Create and place the Submit button
         self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
         self.submit_button.grid(column=1, row=4, padx=5, pady=5)
 
+        # Run the Tkinter event loop
         self.root.mainloop()
 
+    # Method to clear all entry boxes
     def clear_boxes(self):
         self.supplier_id_entry.delete(0, tk.END)
         self.name_entry.delete(0, tk.END)
         self.address_entry.delete(0, tk.END)
         self.contact_entry.delete(0, tk.END)
 
+    # Method to handle form submission
     def submit(self):
+        # Get data from entry fields
         supplier_id = self.supplier_id_entry.get()
         name = self.name_entry.get()
         address = self.address_entry.get()
@@ -425,17 +468,19 @@ class SupplierForm:
         messagebox.showinfo("Success", "Supplier added successfully.")
         self.clear_boxes()
 
-
-
-
 # Define the VenueForm class representing the GUI for adding venues
 class VenueForm:
     def __init__(self, data_layer):
+        # Initialize VenueForm instance with data_layer
         self.data_layer = data_layer
+        # Create the root window
         self.root = tk.Tk()
+        # Set the dimensions of the root window
         self.root.geometry("400x300")
+        # Set the title of the root window
         self.root.title("Venue Form")
 
+        # Create and place labels and entry fields for Venue ID, Name, Address, Contact, Min Guests, and Max Guests
         self.venue_id_label = tk.Label(self.root, text="Venue ID:")
         self.venue_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
         self.venue_id_entry = tk.Entry(self.root)
@@ -467,11 +512,14 @@ class VenueForm:
         self.max_guests_entry = tk.Entry(self.root)
         self.max_guests_entry.grid(column=1, row=5, padx=5, pady=5)
 
+        # Create and place the Submit button
         self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
         self.submit_button.grid(column=1, row=6, padx=5, pady=5)
 
+        # Run the Tkinter event loop
         self.root.mainloop()
 
+    # Method to clear all entry boxes
     def clear_boxes(self):
         self.venue_id_entry.delete(0, tk.END)
         self.name_entry.delete(0, tk.END)
@@ -480,7 +528,9 @@ class VenueForm:
         self.min_guests_entry.delete(0, tk.END)
         self.max_guests_entry.delete(0, tk.END)
 
+    # Method to handle form submission
     def submit(self):
+        # Get data from entry fields
         venue_id = self.venue_id_entry.get()
         name = self.name_entry.get()
         address = self.address_entry.get()
@@ -503,7 +553,7 @@ class VenueForm:
             messagebox.showerror("Error", "Venue ID cannot be empty.")
             return
 
-         # Validate contact is not empty
+        # Validate contact is not empty
         if not contact:
             messagebox.showerror("Error", "Contact cannot be empty.")
             return
@@ -532,14 +582,18 @@ class VenueForm:
         self.clear_boxes()
 
 
+
 # Define the ClientForm class representing the GUI for adding clients
 class ClientForm:
     def __init__(self, data_layer):
+        # Initialize the ClientForm with a data layer to interact with the backend
         self.data_layer = data_layer
+        # Create a new Tkinter window
         self.root = tk.Tk()
         self.root.geometry("400x300")
         self.root.title("Client Form")
 
+        # Create labels and entry fields for client ID, name, address, contact details, and budget
         self.client_id_label = tk.Label(self.root, text="Client ID:")
         self.client_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
         self.client_id_entry = tk.Entry(self.root)
@@ -566,11 +620,14 @@ class ClientForm:
         self.budget_entry = tk.Entry(self.root)
         self.budget_entry.grid(column=1, row=4, padx=5, pady=5)
 
+        # Create a submit button and link it to the submit method
         self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
         self.submit_button.grid(column=1, row=6, padx=5, pady=5)
 
+        # Start the Tkinter event loop
         self.root.mainloop()
 
+    # Method to clear all entry fields
     def clear_boxes(self):
         self.client_id_entry.delete(0, tk.END)
         self.name_entry.delete(0, tk.END)
@@ -578,6 +635,7 @@ class ClientForm:
         self.contact_details_entry.delete(0, tk.END)
         self.budget_entry.delete(0, tk.END)
 
+    # Method triggered when the submit button is clicked
     def submit(self):
         client_id = self.client_id_entry.get()
         name = self.name_entry.get()
@@ -621,15 +679,17 @@ class ClientForm:
         self.clear_boxes()
 
 
-
 # Define the GuestForm class representing the GUI for adding guests
 class GuestForm:
     def __init__(self, data_layer):
+        # Initialize the GuestForm with a data layer to interact with the backend
         self.data_layer = data_layer
+        # Create a new Tkinter window
         self.root = tk.Tk()
         self.root.geometry("400x300")
         self.root.title("Guest Form")
 
+        # Create labels and entry fields for guest ID, name, address, and contact details
         self.guest_id_label = tk.Label(self.root, text="Guest ID:")
         self.guest_id_label.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
         self.guest_id_entry = tk.Entry(self.root)
@@ -650,17 +710,21 @@ class GuestForm:
         self.contact_entry = tk.Entry(self.root)
         self.contact_entry.grid(column=1, row=3, padx=5, pady=5)
 
+        # Create a submit button and link it to the submit method
         self.submit_button = tk.Button(self.root, text="Submit", command=self.submit)
         self.submit_button.grid(column=1, row=4, padx=5, pady=5)
 
+        # Start the Tkinter event loop
         self.root.mainloop()
 
+    # Method to clear all entry fields
     def clear_boxes(self):
         self.guest_id_entry.delete(0, tk.END)
         self.name_entry.delete(0, tk.END)
         self.address_entry.delete(0, tk.END)
         self.contact_entry.delete(0, tk.END)
 
+    # Method triggered when the submit button is clicked
     def submit(self):
         guest_id = self.guest_id_entry.get()
         name = self.name_entry.get()
@@ -698,11 +762,13 @@ class GuestForm:
 # Define the App class representing the main application
 class App:
     def __init__(self):
+        # Initialize the App with a data layer and create the main Tkinter window
         self.data_layer = DataLayer("company_data.pkl")
         self.root = tk.Tk()
         self.root.title("Company Management System")
         self.root.geometry("400x300")
 
+        # Create buttons to open different forms
         self.employee_button = tk.Button(self.root, text="Add Employee", command=self.open_employee_form)
         self.employee_button.pack(pady=10)
 
@@ -721,8 +787,10 @@ class App:
         self.guest_button = tk.Button(self.root, text="Add Guest", command=self.open_guest_form)
         self.guest_button.pack(pady=10)
 
+        # Start the Tkinter event loop
         self.root.mainloop()
 
+    # Methods to open different forms
     def open_employee_form(self):
         EmployeeForm(self.data_layer)
 
